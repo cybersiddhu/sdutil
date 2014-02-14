@@ -18,6 +18,7 @@ type register struct {
     exitSignalCh chan os.Signal
     host         *string
     netInterface *string
+    attributes   multivalue
 }
 
 func (cmd *register) Name() string {
@@ -26,6 +27,7 @@ func (cmd *register) Name() string {
 
 func (cmd *register) DefineFlags(fs *flag.FlagSet) {
     cmd.SetRegisterFlags(fs)
+    fs.Var(&cmd.attributes, "a", "Specify key value attribute(s)")
 }
 
 func (cmd *register) SetRegisterFlags(fs *flag.FlagSet) {
@@ -104,7 +106,11 @@ func (cmd *register) Run(fs *flag.FlagSet) {
     name := mapping[0]
     port := mapping[1]
 
-    cmd.RegisterWithExitHook(name, port, true)
+    if len(cmd.attributes) > 0 {
+        cmd.RegisterAttributesWithExitHook(name, port, cmd.attributes, false)
+    } else {
+        cmd.RegisterWithExitHook(name, port, false)
+    }
 
     log.Printf("Registered service '%s' on port %s.", name, port)
     for {
