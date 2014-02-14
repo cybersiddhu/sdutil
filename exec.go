@@ -32,6 +32,7 @@ func (cmd *execCmd) Name() string {
 }
 
 func (cmd *execCmd) DefineFlags(fs *flag.FlagSet) {
+    cmd.SetRegisterFlags(fs)
     fs.Var(&cmd.attributes, "a", "Specify key value attribute(s)")
 }
 
